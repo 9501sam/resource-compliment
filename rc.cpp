@@ -2,10 +2,12 @@
 #include <algorithm>
 #include <vector>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 using namespace std;
 
 #define NUM_NODE 4
-#define NUM_TASK 12
+#define NUM_TASK 24
 
 typedef struct {
     int cpu;
@@ -27,6 +29,11 @@ void init_cluster()
     cluster[1] = {23, 22};
     cluster[2] = {20, 23};
     cluster[3] = {22, 20};
+    for (int i = 0; i < NUM_NODE; i++) {
+        srand(time(NULL));
+        cluster[i].cpu = 20 + rand() % 10;
+        cluster[i].mem = 20 + rand() % 10;
+    }
     for (int i = 0; i < NUM_NODE; i++)
         cluster[i].w = cluster[i].cpu * cluster[i].mem;
 };
@@ -45,6 +52,21 @@ void init_tasks()
     tasks[9] = {2, 4};
     tasks[10] = {2, 6};
     tasks[11] = {1, 3};
+
+    tasks[12] = {7, 10};
+    tasks[13] = {6, 3};
+    tasks[14] = {6, 5};
+    tasks[15] = {6, 6};
+    tasks[16] = {5, 5};
+    tasks[17] = {5, 7};
+    tasks[18] = {4, 3};
+    tasks[19] = {2, 4};
+    tasks[20] = {2, 6};
+    tasks[21] = {1, 3};
+    for (int i = 0; i < NUM_NODE; i++) {
+        tasks[i].cpu = 2 + rand() % 10;
+        tasks[i].mem = 2 + rand() % 10;
+    }
 };
 
 bool cmp_task(const task &a, const task &b) {
@@ -90,9 +112,17 @@ void resource_complement()
             _tasks.pop_back();
         }
     }
+
+    int sum_cpu = 0;
+    int sum_mem = 0;
+    cout << "---------------" << endl;
     for (int i = 0; i < NUM_NODE; i++) {
         cout << "(" << _cluster[i].cpu << ", " << _cluster[i].mem << ")" << endl;
+        sum_cpu += _cluster[i].cpu;
+        sum_mem += _cluster[i].mem;
     }
+    cout << "sum:" << endl;
+    cout << "(" << sum_cpu << ", " << sum_mem << ")" << endl;
 }
 
 void _resource_complement()
@@ -114,7 +144,7 @@ void _resource_complement()
     for (int i = 0; i < NUM_TASK; i++) {
         task *t = &_tasks[i];
         node *n = &_cluster.front();
-        if ((t->cpu > n->cpu) || (t->mem > t->mem))
+        if ((t->cpu > n->cpu) || (t->mem > n->mem))
             continue;
         n->cpu -= t->cpu;
         n->mem -= t->mem;
@@ -122,10 +152,16 @@ void _resource_complement()
         sort(_cluster.begin(), _cluster.end(), cmp_node);
     }
     
+    int sum_cpu = 0;
+    int sum_mem = 0;
     cout << "---------------" << endl;
     for (int i = 0; i < NUM_NODE; i++) {
         cout << "(" << _cluster[i].cpu << ", " << _cluster[i].mem << ")" << endl;
+        sum_cpu += _cluster[i].cpu;
+        sum_mem += _cluster[i].mem;
     }
+    cout << "sum:" << endl;
+    cout << "(" << sum_cpu << ", " << sum_mem << ")" << endl;
 }
 
 int main()
